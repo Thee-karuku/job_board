@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" href="images/register.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Page</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+        }
+        .register-container {
+            width: 320px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            font-size: 14px;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:disabled {
+            background-color: #94d3a2;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #218838;
+        }
+        .register-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .register-link:hover {
+            color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" required aria-required="true">
+            </div>
+            <div class="form-group">
+                <label for="newPassword">Password:</label>
+                <input type="password" id="newPassword" name="password" required aria-required="true">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required aria-required="true">
+            </div>
+            <div id="errorContainer" class="error-message"></div>
+            <button type="submit" id="submitButton">Register</button>
+        </form>
+        
+        <p class="register-link" onclick="window.location.href='login.html'">Already have an account? Login</p>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const errorContainer = document.getElementById('errorContainer');
+        const submitButton = document.getElementById('submitButton');
+
+        function showError(message) {
+            errorContainer.textContent = message;
+        }
+
+        function isStrongPassword(password) {
+            const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+            return regex.test(password);
+        }
+
+        registerForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            errorContainer.textContent = ''; // Clear previous errors
+            submitButton.disabled = true;
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validate email format
+            if (!email || !email.includes('@')) {
+                showError('Please enter a valid email address.');
+                submitButton.disabled = false;
+                return;
+            }
+
+            // Validate password strength
+            if (!isStrongPassword(password)) {
+                showError('Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.');
+                submitButton.disabled = false;
+                return;
+            }
+
+            // Validate matching passwords
+            if (password !== confirmPassword) {
+                showError('Passwords do not match.');
+                submitButton.disabled = false;
+                return;
+            }
+
+            // Prepare data for the server
+            const data = { email, password };
+
+            try {
+                const response = await fetch('register.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert('Registration successful!');
+                        window.location.href = 'login.html';
+                    } else {
+                        showError(result.message || 'Error registering user.');
+                    }
+                } else {
+                    const errorMsg = await response.text();
+                    showError(errorMsg || 'Server error. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Something went wrong. Please try again.');
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

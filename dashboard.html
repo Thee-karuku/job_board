@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Job Board Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="images/job.png" type="image/x-icon">
+    <style>
+        
+        body {
+            display: flex;
+            font-family: sans-serif;
+            background: linear-gradient(120deg, #ff6f91, #ff9671, #ffc75f, #f9f871 );
+            background-size: 300% 300%;
+            animation: gradientBackground 10s ease infinite;
+            color: #333;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+    
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 50%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            color: #f5aaaa;
+            height: 100vh;
+            padding: 20px;
+            box-shadow: 2px 0 12px rgba(17, 0, 0, 0.959);
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            text-align:center;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .sidebar h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #f0d77e;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            color: #fff;
+            text-decoration: wavy;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(236, 184, 184, 0.2);
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+        }
+
+    
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            overflow-y: scroll;
+            flex: 2;
+            display: flexbox;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+    
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+            max-width: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: right;
+        }
+
+        .search-bar input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            outline: none;
+        }
+
+        .search-bar button {
+            text-align: right;
+            padding: 15px 20px;
+            background-color: #ff6f91;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background-color: #ff4757;
+            transition: 0.4s;
+        }
+
+        
+        .job-listings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        .recommended-jobs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .job-card {
+            width: 100%;
+            max-width: 300px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-10px);
+            box-shadow: #070707;
+        }
+
+        .job-card h3 {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 0px 10px 15px ;
+        }
+
+        .job-card p {
+            font-size: 0.9em;
+            color: #666;
+            margin: 5px 0;
+        }
+        .jobs{
+            text-align: center;
+        }
+
+        .job-card button {
+            width: 100%;
+            padding: 12px;
+            background-color: #04fa3d;
+            color: rgb(15, 14, 14);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .job-card button:hover {
+            background-color: #218838;
+        }
+
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Job Board</h2>
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="apply_jobs.html"><i class="fas fa-briefcase"></i> My Applications</a>
+        <a href="saved_job.html"><i class="fas fa-heart"></i> Saved Jobs</a>
+        <a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+
+    <div class="main-content">
+        <div class="greeting-widget">
+            <div>
+                <h3>Welcome!</h3>
+                <p>Your next opportunity awaits...</p>
+            </div>
+
+        <header>
+            <div class="search-bar">
+                <input type="text" id="jobSearchInput" placeholder="Search for jobs...">
+                <button onclick="filterJobs()">Search</button>
+            </div>
+        </header>
+        <h2 class="jobs">Recommended Jobs</h2>
+        <div class="recommended-jobs" id="recommendedJobs">
+
+        </div>
+
+
+        <h2 class="jobs">Recent Jobs</h2>
+        <div class="job-listings" id="jobListings">
+            
+        </div>
+    </div>
+
+    <script>
+    ''
+        function filterJobs() {
+            const searchInput = document.getElementById('jobSearchInput').value.toLowerCase();
+        
+            fetch(`fetch_jobs.php?query=${searchInput}`)
+                .then(response => response.json())
+                .then(data => {
+                    const recommendedJobsContainer = document.getElementById('recommendedJobs');
+                    const jobListingsContainer = document.getElementById('jobListings');
+                    recommendedJobsContainer.innerHTML = '';
+                    jobListingsContainer.innerHTML = '';
+
+            
+                    data.forEach(job => {
+                        const jobCard = `
+                            <div class="job-card">
+                                <h3>${job.title}</h3>
+                                <p>Company: ${job.company}</p>
+                                <p>Location: ${job.location}</p>
+                                <p>Experience: ${job.experience}</p>
+                                <button onclick="applyJob(${job.id})">Apply Now</button>
+                                <button class="save-job-btn" onclick="saveJob(${job.id})">Save</button>
+                            </div>
+                        `;
+                        if (job.isRecommended) {
+                            recommendedJobsContainer.innerHTML += jobCard; 
+                        } else {
+                            jobListingsContainer.innerHTML += jobCard;
+                        }
+                    });
+                })
+                .catch(error => console.error("Error fetching jobs:", error));
+        }
+
+        function applyJob(jobId) {
+            if (confirm("Are you sure you want to apply for this job?")) {
+                alert("Application submitted!");
+            
+                fetch('apply_job.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ job_id: jobId }),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Application submitted!");
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(err => console.error("Error applying for job", err));
+            }
+        }
+
+        function saveJob(jobId) {
+            alert("Job saved to your list!");
+        
+            fetch('save_job.php', {
+                method: 'POST',
+                body: JSON.stringify({ job_id: jobId }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Job saved!");
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(err => console.error("Error saving job", err));
+        }
+
+
+        document.addEventListener('DOMContentLoaded', filterJobs);
+    </script>
+</body>
+</html>

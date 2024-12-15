@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Jobs - Job Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            padding: 20px;
+            background-color: white;
+            max-width: 900px;
+            margin: 20px auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            background-color: #ff6f91;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #ff4757;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .saved-job-item {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <button onclick="window.location.href='dashboard.html'" class="back-button">Return to Home</button>
+        <h1> Applied Jobs</h1>
+        <p>Here are the jobs you have applied:</p>
+        <div id="saved-jobs-list"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const savedJobsList = document.getElementById('saved-jobs-list');
+
+            try {
+                // Fetch data from the PHP backend
+                const response = await fetch('apply_job.php');
+                const savedJobs = await response.json();
+
+                if (savedJobs.error) {
+                    throw new Error(savedJobs.error);
+                }
+
+                // Populate jobs dynamically
+                savedJobs.forEach(job => {
+                    const jobItem = `
+                        <div class="saved-job-item">
+                            <h3>${job.title}</h3>
+                            <p>Company: ${job.company}</p>
+                            <p>Applied On: ${job.date}</p>
+                        </div>
+                    `;
+                    savedJobsList.innerHTML += jobItem;
+                });
+
+                // Handle case when no jobs are saved
+                if (savedJobs.length === 0) {
+                    savedJobsList.innerHTML = '<p>No applied jobs found.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching applied jobs:', error);
+                savedJobsList.innerHTML = '<p>Error loading applied jobs. Please try again later.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
